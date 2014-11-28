@@ -1,5 +1,6 @@
 package GestureDetectiveSystem.Detectors;
 
+import android.util.Log;
 import android.view.MotionEvent;
 import android.os.Parcelable;
 
@@ -58,7 +59,19 @@ abstract class AbstractGesture implements IGestureDetector {
 
 	@Override
 	public GestureDetectorStatus detect(MotionEvent evnt) {
-		return null;
+		// Implement Gesture procedure template
+		if (inActivePreStatus() && meetActiveCond(evnt)) {
+			mStatus = GestureDetectorStatus.Gesture_active;
+		} else if (inIdlePreStatus() && !meetMovingCond(evnt)) {
+			mStatus = GestureDetectorStatus.Gesture_idle;
+		} else if (inMovingPreStatus() && meetMovingCond(evnt)) {
+			mStatus = GestureDetectorStatus.Gesture_moving;
+		} else if (inDismissPreStatus() && meetDismissCond(evnt)) {
+			mStatus = GestureDetectorStatus.Gesture_dismiss;
+		} else {
+			mStatus = GestureDetectorStatus.Gesture_listening;
+		}
+		return mStatus;
 	}
 
 	@Override
@@ -66,4 +79,38 @@ abstract class AbstractGesture implements IGestureDetector {
 		return null;
 	}
 
+	protected boolean meetActiveCond(MotionEvent e) {
+		return (e.getPointerCount() == trigger_finger_count);
+	}
+
+	protected boolean meetMovingCond(MotionEvent e) {
+		int action = e.getAction();
+		return (e.getPointerCount() == trigger_finger_count && MotionEvent.ACTION_MOVE == (MotionEvent.ACTION_MOVE & action));
+	}
+
+	protected boolean meetDismissCond(MotionEvent e) {
+		// TODO: check how ACTION_CANCEL will impact the result of pointer count
+		// int cnt = e.getPointerCount();
+		int action = e.getAction();
+		return (e.getPointerCount() != trigger_finger_count
+				|| MotionEvent.ACTION_UP == (MotionEvent.ACTION_UP & action) || MotionEvent.ACTION_CANCEL == (MotionEvent.ACTION_CANCEL & action));
+	}
+
+	private boolean inActivePreStatus() {
+		return (mStatus == GestureDetectorStatus.Gesture_listening);
+	}
+
+	private boolean inIdlePreStatus() {
+		return (mStatus == GestureDetectorStatus.Gesture_active);
+	}
+
+	private boolean inMovingPreStatus() {
+		return (mStatus == GestureDetectorStatus.Gesture_idle
+				|| mStatus == GestureDetectorStatus.Gesture_moving || inIdlePreStatus());
+	}
+
+	private boolean inDismissPreStatus() {
+		return (mStatus == GestureDetectorStatus.Gesture_moving
+				|| mStatus == GestureDetectorStatus.Gesture_active || mStatus == GestureDetectorStatus.Gesture_idle);
+	}
 }
