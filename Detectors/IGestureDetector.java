@@ -23,10 +23,11 @@ public interface IGestureDetector {
 }
 
 abstract class AbstractGesture implements IGestureDetector {
-	public int trigger_finger_count;
-	public GestureDetectorType mType;
-	public GestureDetectorStatus mStatus;
-	public GestureCategory mCategory;
+	protected int trigger_finger_count;
+	protected GestureDetectorType mType;
+	protected GestureDetectorStatus mStatus;
+	protected GestureCategory mCategory;
+	protected Parcelable mGestureInfo;
 
 	public boolean active_not_trig = true;
 
@@ -62,12 +63,15 @@ abstract class AbstractGesture implements IGestureDetector {
 		// Implement Gesture procedure template
 		if (inActivePreStatus() && meetActiveCond(evnt)) {
 			mStatus = GestureDetectorStatus.Gesture_active;
+			buildGestureData();
 		} else if (inIdlePreStatus() && !meetMovingCond(evnt)) {
 			mStatus = GestureDetectorStatus.Gesture_idle;
 		} else if (inMovingPreStatus() && meetMovingCond(evnt)) {
 			mStatus = GestureDetectorStatus.Gesture_moving;
+			buildGestureData();
 		} else if (inDismissPreStatus() && meetDismissCond(evnt)) {
 			mStatus = GestureDetectorStatus.Gesture_dismiss;
+			buildGestureData();
 		} else {
 			mStatus = GestureDetectorStatus.Gesture_listening;
 		}
@@ -76,7 +80,7 @@ abstract class AbstractGesture implements IGestureDetector {
 
 	@Override
 	public Parcelable getGestureInfo() {
-		return null;
+		return mGestureInfo;
 	}
 
 	protected boolean meetActiveCond(MotionEvent e) {
@@ -90,7 +94,6 @@ abstract class AbstractGesture implements IGestureDetector {
 
 	protected boolean meetDismissCond(MotionEvent e) {
 		// TODO: check how ACTION_CANCEL will impact the result of pointer count
-		// int cnt = e.getPointerCount();
 		int action = e.getAction();
 		return (e.getPointerCount() != trigger_finger_count
 				|| MotionEvent.ACTION_UP == (MotionEvent.ACTION_UP & action) || MotionEvent.ACTION_CANCEL == (MotionEvent.ACTION_CANCEL & action));
@@ -112,5 +115,8 @@ abstract class AbstractGesture implements IGestureDetector {
 	private boolean inDismissPreStatus() {
 		return (mStatus == GestureDetectorStatus.Gesture_moving
 				|| mStatus == GestureDetectorStatus.Gesture_active || mStatus == GestureDetectorStatus.Gesture_idle);
+	}
+
+	protected void buildGestureData() {
 	}
 }

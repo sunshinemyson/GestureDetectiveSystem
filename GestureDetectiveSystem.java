@@ -3,25 +3,44 @@ package GestureDetectiveSystem;
 import GestureDetectiveSystem.Detectors.GestureCategory;
 import GestureDetectiveSystem.Detectors.GestureDetectorStatus;
 import GestureDetectiveSystem.Detectors.IGestureDetector;
+import GestureDetectiveSystem.Detectors.ThreeFingerSwipeLeftDetector;
 import GestureDetectiveSystem.Detectors.TwoFingerGenericDetector;
 import GestureDetectiveSystem.Detectors.TwoFingerPinchZoomIn;
 import GestureDetectiveSystem.Detectors.TwoFingerPinchZoomOut;
 import android.os.Parcelable;
+import android.util.Log;
 import android.view.MotionEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 public class GestureDetectiveSystem {
 
-	public GestureDetectiveSystem() {
+	public GestureDetectiveSystem(boolean bCustomize) {
 		mDetectors = new ArrayList<IGestureDetector>();
 		mHanlderMap = new HashMap<GestureCategory, ArrayList<IGestureHandler>>();
-		pwrp();
+		if (!bCustomize)
+			pwrp();
 	}
 
 	public void finalize() {
 		// TODO: function name may not right
 		pwdn();
+	}
+
+	public GestureDetectiveSystem customize(GestureCategory gCat) {
+		switch (gCat) {
+		case three_finger_swipe_left: {
+			mDetectors.add(new ThreeFingerSwipeLeftDetector());
+			break;
+		}
+		// add new case here
+		default: {
+			// Not support this gesture
+			// TODO: throw an exception
+			break;
+		}
+		}
+		return this;
 	}
 
 	// @return true : event will be consumed by a gesture
@@ -64,7 +83,7 @@ public class GestureDetectiveSystem {
 				GestureCategory cat = detector.getDetectorCategory();
 				Parcelable gestureInfo = detector.getGestureInfo();
 				ArrayList<IGestureHandler> gHandlers = mHanlderMap.get(cat);
-				if (!gHandlers.isEmpty()) {
+				if (null != gHandlers && !gHandlers.isEmpty()) {
 					IGestureHandler handler;
 					for (int j = 0; j < gHandlers.size(); ++j) {
 						handler = gHandlers.get(j);
@@ -76,6 +95,8 @@ public class GestureDetectiveSystem {
 						if (gestureEnd)
 							handler.onGestureEnd(gestureInfo);
 					}
+				} else {
+					Log.e("TODO","Why your system could detect a gesture that you didn't install a handler?");
 				}
 			}
 		}
@@ -97,6 +118,7 @@ public class GestureDetectiveSystem {
 	private void pwrp() {
 		// add all Gesture detector
 		mDetectors.add(new TwoFingerGenericDetector());
+		mDetectors.add(new ThreeFingerSwipeLeftDetector());
 		// mDetectors.add(new TwoFingerPinchZoomIn() );
 		// mDetectors.add(new TwoFingerPinchZoomOut() );
 	}

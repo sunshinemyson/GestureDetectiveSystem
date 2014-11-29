@@ -12,6 +12,7 @@ public/* TODO abstract */class TwoFingerGenericDetector extends AbstractGesture 
 
 	@Override
 	public Parcelable getGestureInfo() {
+		// TODO: Client won't want get this.
 		String gMessage = new String("TwoFingerGenericDetector");
 		switch (mStatus) {
 		case Gesture_active: {
