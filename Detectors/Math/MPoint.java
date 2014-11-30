@@ -16,8 +16,7 @@ public class MPoint {
 	}
 
 	public static float distance(MPoint s, MPoint e) {
-		// TODO
-		return (s.x - e.x) + (s.y - e.y);
+		return (float)Math.sqrt( Math.pow((s.x - e.x),2.0) + Math.pow((s.y - e.y),2.0) );
 	}
 
 	public static MPoint makeInvalidValue() {

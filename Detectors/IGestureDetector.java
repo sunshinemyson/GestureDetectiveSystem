@@ -61,6 +61,7 @@ abstract class AbstractGesture implements IGestureDetector {
 	@Override
 	public GestureDetectorStatus detect(MotionEvent evnt) {
 		// Implement Gesture procedure template
+		Log.e("GestureDetectorStatus", mStatus.toString());
 		if (inActivePreStatus() && meetActiveCond(evnt)) {
 			mStatus = GestureDetectorStatus.Gesture_active;
 			buildGestureData();
@@ -72,10 +73,15 @@ abstract class AbstractGesture implements IGestureDetector {
 		} else if (inDismissPreStatus() && meetDismissCond(evnt)) {
 			mStatus = GestureDetectorStatus.Gesture_dismiss;
 			buildGestureData();
+			cleanUp();
 		} else {
 			mStatus = GestureDetectorStatus.Gesture_listening;
 		}
 		return mStatus;
+	}
+
+	protected void cleanUp() {
+
 	}
 
 	@Override
@@ -104,7 +110,7 @@ abstract class AbstractGesture implements IGestureDetector {
 	}
 
 	private boolean inIdlePreStatus() {
-		return (mStatus == GestureDetectorStatus.Gesture_active);
+		return (mStatus == GestureDetectorStatus.Gesture_active || mStatus == GestureDetectorStatus.Gesture_idle);
 	}
 
 	private boolean inMovingPreStatus() {

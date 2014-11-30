@@ -1,12 +1,9 @@
 package GestureDetectiveSystem;
 
 import GestureDetectiveSystem.Detectors.GestureCategory;
-import GestureDetectiveSystem.Detectors.GestureDetectorStatus;
 import GestureDetectiveSystem.Detectors.IGestureDetector;
-import GestureDetectiveSystem.Detectors.ThreeFingerSwipeLeftDetector;
-import GestureDetectiveSystem.Detectors.TwoFingerGenericDetector;
-import GestureDetectiveSystem.Detectors.TwoFingerPinchZoomIn;
-import GestureDetectiveSystem.Detectors.TwoFingerPinchZoomOut;
+import GestureDetectiveSystem.Detectors.ThreeFingerDragDetector;
+import GestureDetectiveSystem.Detectors.TwoFingerDragDetector;
 import android.os.Parcelable;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -14,6 +11,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class GestureDetectiveSystem {
+
+	private ArrayList<IGestureDetector> mDetectors;
+	private HashMap<GestureCategory, ArrayList<IGestureHandler>> mHanlderMap;
 
 	public GestureDetectiveSystem(boolean bCustomize) {
 		mDetectors = new ArrayList<IGestureDetector>();
@@ -29,8 +29,12 @@ public class GestureDetectiveSystem {
 
 	public GestureDetectiveSystem customize(GestureCategory gCat) {
 		switch (gCat) {
-		case three_finger_swipe_left: {
-			mDetectors.add(new ThreeFingerSwipeLeftDetector());
+		case THREE_FINGER_DRAG_GESTURE: {
+			mDetectors.add(new ThreeFingerDragDetector());
+			break;
+		}
+		case TWO_FINGER_DRAG_GESTURE: {
+			mDetectors.add(new TwoFingerDragDetector());
 			break;
 		}
 		// add new case here
@@ -96,7 +100,8 @@ public class GestureDetectiveSystem {
 							handler.onGestureEnd(gestureInfo);
 					}
 				} else {
-					Log.e("TODO","Why your system could detect a gesture that you didn't install a handler?");
+					Log.e("TODO",
+							"Why your system could detect a gesture that you didn't install a handler?");
 				}
 			}
 		}
@@ -117,8 +122,8 @@ public class GestureDetectiveSystem {
 
 	private void pwrp() {
 		// add all Gesture detector
-		mDetectors.add(new TwoFingerGenericDetector());
-		mDetectors.add(new ThreeFingerSwipeLeftDetector());
+		mDetectors.add(new TwoFingerDragDetector());
+		mDetectors.add(new ThreeFingerDragDetector());
 		// mDetectors.add(new TwoFingerPinchZoomIn() );
 		// mDetectors.add(new TwoFingerPinchZoomOut() );
 	}
@@ -126,9 +131,5 @@ public class GestureDetectiveSystem {
 	private void pwdn() {
 
 	}
-
-	private ArrayList<IGestureDetector> mDetectors;
-
-	private HashMap<GestureCategory, ArrayList<IGestureHandler>> mHanlderMap;
 
 }

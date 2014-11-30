@@ -4,15 +4,15 @@ import GestureDetectiveSystem.GenericTwoFingerInfoData;
 import GestureDetectiveSystem.Detectors.GestureDetectorType;
 import android.os.Parcelable;
 
-public/* TODO abstract */class TwoFingerGenericDetector extends AbstractGesture {
-	public TwoFingerGenericDetector() {
+public/* TODO abstract */class TwoFingerDragDetector extends AbstractGesture {
+	public TwoFingerDragDetector() {
 		super(2, GestureDetectorType.trigger_detector,
-				GestureCategory.two_finger_generic);
+				GestureCategory.TWO_FINGER_DRAG_GESTURE);
 	}
 
 	@Override
 	public Parcelable getGestureInfo() {
-		// TODO: Client won't want get this.
+		// TODO: Client won't want get this. Need rewrite
 		String gMessage = new String("TwoFingerGenericDetector");
 		switch (mStatus) {
 		case Gesture_active: {
