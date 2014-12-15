@@ -2,7 +2,7 @@ package GestureDetectiveSystem.Detectors.Math;
 
 public class MPoint {
 
-	public static int INVALID_VALUE = -1;
+	public static final int INVALID_VALUE = -1;
 	public int x;
 	public int y;
 
